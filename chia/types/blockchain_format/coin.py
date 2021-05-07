@@ -19,9 +19,17 @@ class Coin(Streamable):
     puzzle_hash: bytes32
     amount: uint64
 
+    def get_hash(self) -> bytes32:
+        # This does not use streamable format for hashing, the amount is
+        # serialized using CLVM integer format.
+
+        # Note that int_to_bytes() will prepend a 0 to integers where the most
+        # significant bit is set, to encode it as a positive number. This
+        # despite "amount" being unsigned. This way, a CLVM program can generate
+        # these hashes easily.
+        return std_hash(self.parent_coin_info + self.puzzle_hash + int_to_bytes(self.amount))
+
     def name(self) -> bytes32:
-        # This does not use streamable format for serialization. Look at the __bytes__ method that is being overridden:
-        # The amount is serialized using CLVM serialization.
         return self.get_hash()
 
     def as_list(self) -> List[Any]:
@@ -38,8 +46,10 @@ class Coin(Streamable):
         amount = int_from_bytes(blob[64:])
         return Coin(parent_coin_info, puzzle_hash, uint64(amount))
 
-    def __bytes__(self):
-        return self.parent_coin_info + self.puzzle_hash + int_to_bytes(self.amount)
+    def __bytes__(self) -> bytes:
+        # this function is never called and calling it would be ambiguous. Do
+        # you want the format that's hashed or the format that's serialized?
+        assert False
 
 
 def hash_coin_list(coin_list: List[Coin]) -> bytes32:
