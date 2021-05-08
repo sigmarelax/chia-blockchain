@@ -41,15 +41,16 @@ class Coin(Streamable):
 
     @classmethod
     def from_bytes(cls, blob):
-        parent_coin_info = blob[:32]
-        puzzle_hash = blob[32:64]
-        amount = int_from_bytes(blob[64:])
-        return Coin(parent_coin_info, puzzle_hash, uint64(amount))
+        # this function is never called. We rely on the standard streamable
+        # protocol for both serialization and parsing of Coin.
+        # using this function may be ambiguous the same way __bytes__() is.
+        assert False
 
     def __bytes__(self) -> bytes:
         # this function is never called and calling it would be ambiguous. Do
         # you want the format that's hashed or the format that's serialized?
         assert False
+        return b""
 
 
 def hash_coin_list(coin_list: List[Coin]) -> bytes32:
