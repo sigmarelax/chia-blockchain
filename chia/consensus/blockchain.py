@@ -612,7 +612,7 @@ class Blockchain(BlockchainInterface):
         if height < 0:
             return
         blocks_to_remove = self.__heights_in_cache.get(uint32(height), None)
-        while blocks_to_remove is not None and height >= 0:
+        while blocks_to_remove is not None and height > 0:
             for header_hash in blocks_to_remove:
                 del self.__block_records[header_hash]  # remove from blocks
             del self.__heights_in_cache[uint32(height)]  # remove height from heights in cache
