@@ -22,6 +22,9 @@ def generate_and_print():
     print("Generating private key. Mnemonic (24 secret words):")
     print(mnemonic)
     passphrase = ""
+    root_path = DEFAULT_ROOT_PATH
+    config = load_config(root_path, "config.yaml")
+    selected = config["selected_network"]
     prefix = config["network_overrides"]["config"][selected]["address_prefix"]
     seed = mnemonic_to_seed(mnemonic, passphrase)
     sk = AugSchemeMPL.key_gen(seed)
